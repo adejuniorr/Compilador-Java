@@ -15,7 +15,7 @@ public class App {
             double product = calculator.multiply(a, c);
             double quotient = calculator.divide(c, d); // This will throw an exception
 
-            System.out.println("Sum: " + sum);
+            System.out.println("Soma: " + sum);
             System.out.println("Difference: " + difference);
             System.out.println("Product: " + product);
             System.out.println("Quotient: " + quotient);
@@ -24,3 +24,5 @@ public class App {
         }
     }
 }
+
+
