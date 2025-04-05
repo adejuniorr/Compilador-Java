@@ -6,7 +6,6 @@ public class App {
     public static void main(String[] args) throws Exception {
         String filePath = "C:\\Users\\adejr\\github\\Compilador-Java\\ProjetoJava\\src\\CodeSample.txt";
         String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
-        int lineNumber = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
@@ -15,8 +14,7 @@ public class App {
             System.out.println("--------------------------------------------------");
 
             while ((currentLine = br.readLine()) != null) {
-                lineNumber++;
-                System.out.println(String.format("%-4d| %s", lineNumber, currentLine));
+                System.out.println(currentLine);
             }
 
             System.out.println("--------------------------------------------------");
