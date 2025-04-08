@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        String filePath = "src/CodeSample.txt";
+        String filePath = "C:\\Users\\adejr\\github\\Compilador-Java\\ProjetoJava\\src\\CodeSample.txt";
         String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
         int lineNumber = 0;
 
@@ -25,8 +25,8 @@ public class App {
 
             AnalisadorLexico analisador = new AnalisadorLexico(entrada.toString());
             System.out.println("Tokens encontrados:");
-            
-            for (Token token : analisador.analisar()) {
+
+            for (Token token : analisador.analisar(lineNumber)) {
                 System.out.println(token);
             }
 

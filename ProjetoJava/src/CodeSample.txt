@@ -1,27 +1,22 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+package SimpleCalculator;
 
-public class App {
-    public static void main(String[] args) throws Exception {
-        String filePath = "C:\\Users\\adejr\\github\\Compilador-Java\\ProjetoJava\\src\\CodeSample.txt";
-        String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
+public class SimpleCalculator {
+    public int add(int a, int b) {
+        return a + b;
+    }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String currentLine;
+    public int subtract(int a, int 2) {
+        return a - b;
+    }
 
-            System.out.println("Reading file: " + fileName);
-            System.out.println("--------------------------------------------------");
+    public int multiply(int a, int b) {
+        return a * b;
+    }
 
-            while ((currentLine = br.readLine()) != null) {
-                System.out.println(currentLine);
-            }
-
-            System.out.println("--------------------------------------------------");
-            System.out.println("End of file reached.");
-        } catch (IOException error) {
-            System.err.println("Erro ao ler arquivo: " + error.getMessage());
+    public int integerDivide(int a, int b) {
+        if (b == 0) {
+            throw new IllegalArgumentException("Cannot integerDivide by zero");
         }
+        return a / b;
     }
 }
-

@@ -17,6 +17,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return "Token [tipoDoToken=" + tipoDoToken + ", valorDoToken=" + valorDoToken + "]";
+        return "Token [tipoDoToken='" + tipoDoToken + "', valorDoToken='" + valorDoToken + "']";
     }
 }

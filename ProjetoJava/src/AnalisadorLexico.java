@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ public class AnalisadorLexico {
         this.listaDeTokens = new ArrayList<>();
     }
 
-    public List<Token> analisar() throws IOException {
+    public List<Token> analisar(int lineNumber) throws IOException {
         while (posicaoDoCaractere < entrada.length()) {
             char caractere = entrada.charAt(posicaoDoCaractere);
 
@@ -41,7 +40,13 @@ public class AnalisadorLexico {
                 posicaoDoCaractere++;
                 continue;
             }
-    
+
+            if (caractere == ',') {
+                listaDeTokens.add(new Token("DELIMITADOR_VIRGULA", ","));
+                posicaoDoCaractere++;
+                continue;
+            }
+
             if (Character.isWhitespace(caractere)) {
                 posicaoDoCaractere++;
                 continue;
@@ -64,7 +69,7 @@ public class AnalisadorLexico {
                 lerIdentificadorOuPalavraChave();
             } else {
                 throw new IOException("[ERRO] Caractere '" + caractere + "' não reconhecido na posição "
-                        + posicaoDoCaractere + " da cadeia de entrada.");
+                        + posicaoDoCaractere + ", linha " + lineNumber + " da cadeia de entrada.");
             }
         }
 
@@ -75,7 +80,6 @@ public class AnalisadorLexico {
     private void lerNumero() {
         StringBuilder sb = new StringBuilder();
 
-        // Verificar se é um número negativo
         if (entrada.charAt(posicaoDoCaractere) == '-') {
             sb.append('-');
             posicaoDoCaractere++;
@@ -86,20 +90,7 @@ public class AnalisadorLexico {
             posicaoDoCaractere++;
         }
 
-        // Suporte a ponto flutuante
-        if (posicaoDoCaractere < entrada.length() && entrada.charAt(posicaoDoCaractere) == '.') {
-            sb.append('.');
-            posicaoDoCaractere++;
-
-            while (posicaoDoCaractere < entrada.length() && Character.isDigit(entrada.charAt(posicaoDoCaractere))) {
-                sb.append(entrada.charAt(posicaoDoCaractere));
-                posicaoDoCaractere++;
-            }
-        }
-
-        // Valida o número
-        double valor = Double.parseDouble(sb.toString());
-        listaDeTokens.add(new Token("NUM_REAL", sb.toString()));
+        listaDeTokens.add(new Token("NUM_INT", sb.toString()));
     }
 
     private void lerString() throws IOException {
@@ -128,7 +119,8 @@ public class AnalisadorLexico {
         }
 
         if (posicaoDoCaractere < entrada.length() && entrada.charAt(posicaoDoCaractere) == '}') {
-            posicaoDoCaractere++; // pula '}'
+            posicaoDoCaractere++;
+            ; // pula '}'
         } else {
             throw new IOException("[ERRO] Comentário não fechado na posição " + posicaoDoCaractere + ".");
         }
@@ -149,7 +141,7 @@ public class AnalisadorLexico {
             operador = ">=";
             posicaoDoCaractere += 2;
         } else {
-            operador = String.valueOf(atual); // Caso para '=' ou outros
+            operador = String.valueOf(atual);
             posicaoDoCaractere++;
         }
 
@@ -202,7 +194,16 @@ public class AnalisadorLexico {
             case "do":
             case "read":
             case "write":
+            case "package":
+            case "import":
+            case "public":
+            case "private":
+            case "protected":
+            case "class":
                 tipoDoToken = "PALAVRA_CHAVE";
+                break;
+            case "int":
+                tipoDoToken = "INDENTIFICADOR_TIPO_INTEIRO";
                 break;
             case "true":
             case "false":
@@ -220,7 +221,7 @@ public class AnalisadorLexico {
         if (posicaoDoCaractere + 1 < entrada.length()) {
             return entrada.charAt(posicaoDoCaractere + 1);
         } else {
-            return ' '; // Ou lançar uma exceção, se preferir
+            return ' ';
         }
     }
 
