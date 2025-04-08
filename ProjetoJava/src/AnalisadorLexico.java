@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,30 @@ public class AnalisadorLexico {
         while (posicaoDoCaractere < entrada.length()) {
             char caractere = entrada.charAt(posicaoDoCaractere);
 
+            if (caractere == '(') {
+                listaDeTokens.add(new Token("DELIMITADOR_ABRE_PARENTESES", "("));
+                posicaoDoCaractere++;
+                continue;
+            } else if (caractere == ')') {
+                listaDeTokens.add(new Token("DELIMITADOR_FECHA_PARENTESES", ")"));
+                posicaoDoCaractere++;
+                continue;
+            } else if (caractere == '{') {
+                listaDeTokens.add(new Token("DELIMITADOR_ABRE_CHAVE", "{"));
+                posicaoDoCaractere++;
+                continue;
+            } else if (caractere == '}') {
+                listaDeTokens.add(new Token("DELIMITADOR_FECHA_CHAVE", "}"));
+                posicaoDoCaractere++;
+                continue;
+            }
+
+            if (caractere == ';') {
+                listaDeTokens.add(new Token("DELIMITADOR_PONTO_VIRGULA", ";"));
+                posicaoDoCaractere++;
+                continue;
+            }
+    
             if (Character.isWhitespace(caractere)) {
                 posicaoDoCaractere++;
                 continue;
@@ -49,17 +74,32 @@ public class AnalisadorLexico {
 
     private void lerNumero() {
         StringBuilder sb = new StringBuilder();
+
+        // Verificar se é um número negativo
+        if (entrada.charAt(posicaoDoCaractere) == '-') {
+            sb.append('-');
+            posicaoDoCaractere++;
+        }
+
         while (posicaoDoCaractere < entrada.length() && Character.isDigit(entrada.charAt(posicaoDoCaractere))) {
             sb.append(entrada.charAt(posicaoDoCaractere));
             posicaoDoCaractere++;
         }
 
-        int valor = Integer.parseInt(sb.toString());
-        if (valor < -3276 || valor > 3276) {
-            System.err.println("[Aviso] Número fora do intervalo permitido.");
+        // Suporte a ponto flutuante
+        if (posicaoDoCaractere < entrada.length() && entrada.charAt(posicaoDoCaractere) == '.') {
+            sb.append('.');
+            posicaoDoCaractere++;
+
+            while (posicaoDoCaractere < entrada.length() && Character.isDigit(entrada.charAt(posicaoDoCaractere))) {
+                sb.append(entrada.charAt(posicaoDoCaractere));
+                posicaoDoCaractere++;
+            }
         }
 
-        listaDeTokens.add(new Token("NUM_INT", sb.toString()));
+        // Valida o número
+        double valor = Double.parseDouble(sb.toString());
+        listaDeTokens.add(new Token("NUM_REAL", sb.toString()));
     }
 
     private void lerString() throws IOException {
@@ -90,7 +130,7 @@ public class AnalisadorLexico {
         if (posicaoDoCaractere < entrada.length() && entrada.charAt(posicaoDoCaractere) == '}') {
             posicaoDoCaractere++; // pula '}'
         } else {
-            throw new IOException("[ERRO] Comentário não fechado.");
+            throw new IOException("[ERRO] Comentário não fechado na posição " + posicaoDoCaractere + ".");
         }
     }
 
@@ -109,7 +149,7 @@ public class AnalisadorLexico {
             operador = ">=";
             posicaoDoCaractere += 2;
         } else {
-            operador = String.valueOf(atual);
+            operador = String.valueOf(atual); // Caso para '=' ou outros
             posicaoDoCaractere++;
         }
 
@@ -119,7 +159,7 @@ public class AnalisadorLexico {
     private void lerOperadorAritmetico() {
         char caractere = entrada.charAt(posicaoDoCaractere);
         String tipoDoToken;
-    
+
         switch (caractere) {
             case '+':
                 tipoDoToken = "OP_SOMA";
@@ -137,7 +177,7 @@ public class AnalisadorLexico {
                 tipoDoToken = "DESCONHECIDO";
                 break;
         }
-    
+
         listaDeTokens.add(new Token(tipoDoToken, String.valueOf(caractere)));
         posicaoDoCaractere++;
     }
@@ -172,15 +212,15 @@ public class AnalisadorLexico {
                 tipoDoToken = "IDENTIFICADOR";
                 break;
         }
-        
-        listaDeTokens.add(new Token(tipoDoToken, palavra));        
+
+        listaDeTokens.add(new Token(tipoDoToken, palavra));
     }
 
     private char peek() {
         if (posicaoDoCaractere + 1 < entrada.length()) {
             return entrada.charAt(posicaoDoCaractere + 1);
         } else {
-            return '\0';
+            return ' '; // Ou lançar uma exceção, se preferir
         }
     }
 

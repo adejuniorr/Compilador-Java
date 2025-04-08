@@ -4,11 +4,12 @@ import java.io.IOException;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        String filePath = "C:\\Users\\adejr\\github\\Compilador-Java\\ProjetoJava\\src\\CodeSample.txt";
+        String filePath = "src/CodeSample.txt";
         String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
         int lineNumber = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            StringBuilder entrada = new StringBuilder();
             String currentLine;
 
             System.out.println("Reading file: " + fileName);
@@ -16,7 +17,17 @@ public class App {
 
             while ((currentLine = br.readLine()) != null) {
                 lineNumber++;
+                entrada.append(currentLine).append("\n");
                 System.out.println(String.format("%-4d| %s", lineNumber, currentLine));
+            }
+
+            System.out.println("--------------------------------------------------");
+
+            AnalisadorLexico analisador = new AnalisadorLexico(entrada.toString());
+            System.out.println("Tokens encontrados:");
+            
+            for (Token token : analisador.analisar()) {
+                System.out.println(token);
             }
 
             System.out.println("--------------------------------------------------");
