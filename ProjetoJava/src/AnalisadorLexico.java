@@ -5,7 +5,11 @@ import java.util.List;
 public class AnalisadorLexico {
     private String entrada;
     private int posicaoDoCaractere;
-    private List<Token> listaDeTokens;
+    public static List<Token> listaDeTokens;
+
+    public List<Token> getListaDeTokens() {
+        return listaDeTokens;
+    }
 
     public AnalisadorLexico(String entrada) {
         this.entrada = entrada;

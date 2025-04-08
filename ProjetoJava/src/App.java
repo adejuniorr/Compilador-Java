@@ -11,6 +11,7 @@ public class App {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             StringBuilder entrada = new StringBuilder();
             String currentLine;
+            AnalisadorLexico analisador = new AnalisadorLexico(entrada.toString());
 
             System.out.println("Reading file: " + fileName);
             System.out.println("--------------------------------------------------");
@@ -18,15 +19,15 @@ public class App {
             while ((currentLine = br.readLine()) != null) {
                 lineNumber++;
                 entrada.append(currentLine).append("\n");
+                analisador = new AnalisadorLexico(entrada.toString());
                 System.out.println(String.format("%-4d| %s", lineNumber, currentLine));
+                analisador.analisar(lineNumber);
             }
 
             System.out.println("--------------------------------------------------");
-
-            AnalisadorLexico analisador = new AnalisadorLexico(entrada.toString());
             System.out.println("Tokens encontrados:");
 
-            for (Token token : analisador.analisar(lineNumber)) {
+            for (Token token : AnalisadorLexico.listaDeTokens) {
                 System.out.println(token);
             }
 
