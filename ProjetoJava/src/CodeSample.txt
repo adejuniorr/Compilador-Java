@@ -1,6 +1,8 @@
 package SimpleCalculator;
 
 public class SimpleCalculator {
+    string palavra = "asdadasdd \n";
+
     public int add(int a, int b) {
         return a + b;
     }

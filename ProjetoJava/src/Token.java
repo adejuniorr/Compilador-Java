@@ -7,11 +7,11 @@ public class Token {
         this.valorDoToken = valorDoToken;
     }
 
-    public String getTipoDoToken() {
+    public String getTipo() {
         return tipoDoToken;
     }
 
-    public String getValorDoToken() {
+    public String getValor() {
         return valorDoToken;
     }
 

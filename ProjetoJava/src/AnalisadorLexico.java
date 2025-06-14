@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class AnalisadorLexico {
         this.listaDeTokens = new ArrayList<>();
     }
 
-    public List<Token> analisar(int lineNumber) throws IOException {
+    public List<Token> analisar(int lineNumber) {
         while (posicaoDoCaractere < entrada.length()) {
             char caractere = entrada.charAt(posicaoDoCaractere);
 
@@ -72,8 +71,9 @@ public class AnalisadorLexico {
             } else if (Character.isLetter(caractere)) {
                 lerIdentificadorOuPalavraChave();
             } else {
-                throw new IOException("[ERRO] Caractere '" + caractere + "' não reconhecido na posição "
-                        + posicaoDoCaractere + ", linha " + lineNumber + " da cadeia de entrada.");
+                listaDeTokens.add(new Token("TOKEN_INVALIDO", "" + caractere));
+                posicaoDoCaractere++;
+                continue;
             }
         }
 
@@ -83,50 +83,70 @@ public class AnalisadorLexico {
 
     private void lerNumero() {
         StringBuilder sb = new StringBuilder();
+        boolean negativo = false;
 
         if (entrada.charAt(posicaoDoCaractere) == '-') {
+            negativo = true;
             sb.append('-');
             posicaoDoCaractere++;
         }
 
+        int inicio = posicaoDoCaractere;
         while (posicaoDoCaractere < entrada.length() && Character.isDigit(entrada.charAt(posicaoDoCaractere))) {
             sb.append(entrada.charAt(posicaoDoCaractere));
-            posicaoDoCaractere++;
+            try {
+                int valor = Integer.parseInt(sb.toString());
+                if (valor < -3276 || valor > 3276) {
+                    break; // número inválido, encerra token antes do dígito que estourou o limite
+                }
+                posicaoDoCaractere++;
+            } catch (NumberFormatException e) {
+                break; // número mal formado, encerra token
+            }
         }
 
-        listaDeTokens.add(new Token("NUM_INT", sb.toString()));
+        // Remove último caractere que tornou o número inválido (se necessário)
+        String numeroValido = entrada.substring(inicio, posicaoDoCaractere);
+        if (negativo) {
+            numeroValido = "-" + numeroValido;
+        }
+
+        if (!numeroValido.isEmpty() && !numeroValido.equals("-")) {
+            listaDeTokens.add(new Token("NUM_INT", numeroValido));
+        }
     }
 
-    private void lerString() throws IOException {
+
+    private void lerString() {
         StringBuilder sb = new StringBuilder();
         posicaoDoCaractere++; // pula aspas iniciais
 
         while (posicaoDoCaractere < entrada.length()) {
             char c = entrada.charAt(posicaoDoCaractere);
+
             if (c == '"') {
                 posicaoDoCaractere++;
                 listaDeTokens.add(new Token("STRING", sb.toString()));
                 return;
+            } else if (c == '\n') {
+                listaDeTokens.add(new Token("QUEBRA_DE_LINHA", "\\n"));
+                posicaoDoCaractere++;
             } else {
                 sb.append(c);
                 posicaoDoCaractere++;
             }
         }
-
-        throw new IOException("[ERRO] String não fechada.");
     }
 
-    private void lerComentario() throws IOException {
+
+    private void lerComentario() {
         posicaoDoCaractere++; // pula '{'
         while (posicaoDoCaractere < entrada.length() && entrada.charAt(posicaoDoCaractere) != '}') {
             posicaoDoCaractere++;
         }
 
         if (posicaoDoCaractere < entrada.length() && entrada.charAt(posicaoDoCaractere) == '}') {
-            posicaoDoCaractere++;
-            ; // pula '}'
-        } else {
-            throw new IOException("[ERRO] Comentário não fechado na posição " + posicaoDoCaractere + ".");
+            posicaoDoCaractere++; // pula '}'
         }
     }
 
